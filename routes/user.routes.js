@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 var router = express.Router()
 const userController = require('../controllers/user.controller.js');
+const linkController = require('../controllers/link.controller.js');
 
 
 router.use(bodyParser.urlencoded({extended:false}))
@@ -15,11 +16,13 @@ router.get('/', (req, res) => {//특정유저 얻기
 })
 
 
-router.get('/:userID', userController.checkGetInput, userController.getUserInfoByID)//특정 유저에 대한 정보 얻기...
+router.get('/:userID', userController.checkLoginInput, userController.getUserInfoByID)//특정 유저에 대한 정보 얻기...
 
-router.post('/register', userController.checkPostInput, userController.registerUser)
+router.post('/register', userController.checkRegisterInput, userController.registerUser)
 
-router.post('/login',userController.checkPostInput, userController.loginUser)
+router.post('/login',userController.checkLoginInput, userController.loginUser)
+
+router.post('/link', linkController.connectUsers)
 
 
 // router.post('/register', registerUserController)
