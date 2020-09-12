@@ -12,6 +12,8 @@ const http = require('http');
 var userRouter = require('./routes/user.routes.js');
 
 const formatMessage = require('./model/messages.js');
+const formatLocation = require('./model/location.js');
+
 const {userJoin, getCurrentUser} = require('./utils/users.js');
 // const server = http.createServer(app);
 // const io = io.listen(server);
@@ -58,7 +60,7 @@ io.on('connection', socket => {
 				socket.join(linkInfo.username);//착용자라면 자기 아이디의 룸에 접속
 			}
 		}else{
-			for(var i = 0 ; i < linkInfo.linkedList.length; i++){
+			for(var i = 0 ; i < linkInfo.linkedList.length; i++){//보호자라면, 각각 착용자의 룸에 접속 
 				console.log(linkInfo.username, " joined ",linkInfo.linkedList[i].username );
 				socket.join(linkInfo.linkedList[i].username);
 			}
@@ -70,8 +72,20 @@ io.on('connection', socket => {
 		// 	io.to(linkInfo[1]).emit('message', formatMessage(user.username,msg));
 		// });
 		socket.on('androidMessage', (msg) => {
+			console.log("send Message ! ")
 			console.log(msg);
-			io.to(linkInfo.username).emit('sendData', formatMessage(linkInfo[1],msg.content));
+			console.log(linkInfo.username);
+			// io.to(linkInfo.username).emit('sendData', formatMessage(linkInfo[1],msg.content));
+			socket.broadcast.to(linkInfo.username).emit('sendData', formatMessage(linkInfo[1],msg.content));
+			//socket.broadcast.to(linkInfo.username).emit('sendLocation', formatMessage(linkInfo[1],msg.content));
+
+		});
+
+		socket.on('sendLocation', (msg) => {
+			console.log("send Location ! ");
+			// io.to(linkInfo.username).emit('sendData', formatMessage(linkInfo[1],msg.content));
+			socket.broadcast.to(linkInfo.username).emit('sendLocation', formatLocation(linkInfo[1],msg.content, msg.lat, msg.lang));
+
 		});
 	})
 
